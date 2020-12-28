@@ -15,7 +15,7 @@ exports.register = (app) => {
     res.status(200).send(accessMap);
   });
   
-  app.post("/api/permission", (req, res) => {
+  app.post("/api/permissions", (req, res) => {
     const permission = req.body;
     const verb = permission && permission.verb;
     if (!verb) {
