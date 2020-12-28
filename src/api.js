@@ -11,7 +11,7 @@ const accessMap = [{
 
 // register routes for cars API
 exports.register = (app) => {
-  app.get("__accessmap", (req, res) => {
+  app.get("/api/v1/edge/accessmap", (req, res) => {
     res.status(200).send(accessMap);
   });
   
