@@ -1,18 +1,53 @@
 // Permissions access mock API
 
 // local state for cars access map
-const accessMap = [{
-  "mycars://cars/get": 7,
-  "mycars://cars/post": 7,
-  "mycars://cars/_id/get": 7,
-  "mycars://cars/_id/put": 7,
-  "mycars://cars/_id/delete": 7,
-}];
+const accessMap = {
+  "/cars": {
+    verb: {
+      GET: {
+        visible: true,
+        enabled: true
+      },
+      POST: {
+        visible: true,
+        enabled: true
+      },
+      PUT: {
+        visible: true,
+        enabled: true
+      },
+      DELETE: {
+        visible: true,
+        enabled: true
+      },
+    }
+  },
+  "/cars/__id": {
+    verb: {
+      GET: {
+        visible: true,
+        enabled: true
+      },
+      POST: {
+        visible: true,
+        enabled: true
+      },
+      PUT: {
+        visible: true,
+        enabled: true
+      },
+      DELETE: {
+        visible: true,
+        enabled: true
+      },
+    }
+  }
+};
 
 // register routes for cars API
 exports.register = (app) => {
   app.post("/api/v1/edge/accessmap", (req, res) => {
-    res.status(200).send(accessMap);
+    res.status(200).send({ path: accessMap });
   });
   
   app.post("/api/permissions", (req, res) => {
@@ -23,38 +58,14 @@ exports.register = (app) => {
       return;
     }
 
-    let key;
-    switch (verb) {
-      case 'get':
-        key = `mycars://cars/get`;
-        break;
-      case 'post':
-        key = `mycars://cars/post`;
-        break;
-      case 'put':
-        key = `mycars://cars/_id/get`;
-        break;
-      case 'delete':
-        key = `mycars://cars/_id/delete`;
-        break;
-    }
-    if (!key) {
-      res.status(500).send();
-      return;
-    }
-    let permissionValue = 0;
+    const path = (verb === 'GET' || verb === 'POST') ? '/cars' : '/cars/__id';
     if (permission.visible != null) {
-      if (permission.visible) {
-        permissionValue += 4;
-      }
+      accessMap[path].verb[verb].visible = permission.visible;
     }
     if (permission.enabled != null) {
-      if (permission.enabled) {
-        permissionValue += 2;
-      }
+      accessMap[path].verb[verb].enabled = permission.enabled;
     }
-    accessMap[key] = permissionValue;
 
-    res.status(201).send();
+    res.status(201).send(accessMap);
   });
 }
